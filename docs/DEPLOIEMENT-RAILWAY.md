@@ -41,11 +41,9 @@ Backend + Frontend + Base PostgreSQL, le tout sur Railway.
 
 4. Onglet **Settings** (ou **Configure** selon l’interface) :
    - **Root Directory** : `server`
-   - **Build Command** :  
-     `pip install -r requirements.txt`
-   - **Start Command** :  
-     `uvicorn src.main:app --host 0.0.0.0 --port $PORT`  
-     (Railway fournit automatiquement `PORT`.)
+   - **Builder** : s’assurer que le **Dockerfile** est utilisé (pas Nixpacks).
+   - **Build Command** : laisser vide si Dockerfile utilisé (le Dockerfile gère le build).
+   - **Start Command** : **laisser vide** pour que le `CMD` du Dockerfile soit utilisé (sinon Railway peut lancer une commande où `$PORT` n’est pas pris en compte).
 
 ### 3.2 Variables d’environnement
 

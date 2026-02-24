@@ -11,8 +11,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/ ./src/
 COPY media/ ./media/
-COPY start.sh ./
-RUN chmod +x start.sh
 
 # Créer media si vide (covers/ebooks peuvent être montés en volume ou ajoutés au build)
 RUN mkdir -p media/covers media/ebooks
@@ -20,5 +18,5 @@ RUN mkdir -p media/covers media/ebooks
 ENV PYTHONUNBUFFERED=1
 EXPOSE 8000
 
-# start.sh lit $PORT (Railway) et lance uvicorn
-CMD ["./start.sh"]
+# Forme shell : sh développe $PORT (Railway) au démarrage
+CMD sh -c 'exec uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}'

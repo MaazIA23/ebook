@@ -11,7 +11,12 @@ from src.db.database import Base, engine
 from src.routes import auth, products, orders, payments, downloads
 
 
-Base.metadata.create_all(bind=engine)
+# Création des tables au démarrage ; en cas d'échec (ex. DB injoignable), on démarre quand même pour que /health réponde
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    import sys
+    print(f"Warning: create_all failed: {e}", file=sys.stderr)
 
 # CORS : en prod, définir CORS_ORIGINS (ex. "https://monapp.vercel.app")
 _cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:5174")
