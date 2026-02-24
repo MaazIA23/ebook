@@ -138,6 +138,27 @@ Pour que le navigateur autorise les appels du front vers l’API :
 
 ---
 
+## Dépannage – Logs Railway
+
+### Messages à ignorer (normaux ou hors de ton app)
+
+- **`relation "pg_stat_statements" does not exist`** : requête de l’interface Railway (Data UI) sur Postgres. Tu peux l’ignorer.
+- **`checkpoint starting` / `checkpoint complete`** : maintenance normale de PostgreSQL.
+- **`Connection reset by peer`** (côté Postgres) : souvent quand le backend redémarre et coupe la connexion à la base.
+
+### Pydantic : `orm_mode` → `from_attributes`
+
+Si tu vois **`'orm_mode' has been renamed to 'from_attributes'`** : le code du dépôt est à jour (on utilise `from_attributes`). Assure-toi d’avoir **poussé** et que Railway a **redéployé** le backend avec la dernière version.
+
+### Backend qui s’arrête après ~10 secondes
+
+Si les logs montrent **`Uvicorn running`** puis peu après **`Shutting down`** / **`Finished server process`** :
+
+1. **Health check** : Railway → service backend → **Settings** → cherche **Health Check** / **Probe**. Si activé, mets le chemin sur **`/health`** (ou **`/`**) et un **délai initial** suffisant (ex. 30 s) pour laisser uvicorn démarrer. Si tu peux désactiver le health check pour tester, fais-le temporairement.
+2. **Redeploy** : déclenche un **Redeploy** après avoir poussé les derniers changements (Dockerfile, `from_attributes`), pour que le conteneur tourne avec la bonne config.
+
+---
+
 ## Récap
 
 | Élément | Où | À retenir |

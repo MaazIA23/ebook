@@ -21,10 +21,12 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copier le code
 COPY src ./src
 COPY media ./media
+COPY run.py .
 
 # S'assurer que les dossiers media existent
 RUN mkdir -p media/covers media/ebooks
 
-# Railway injecte automatiquement la variable PORT
-# IMPORTANT : ne pas mettre de fallback
-CMD ["sh", "-c", "uvicorn src.main:app --host 0.0.0.0 --port $PORT"]
+EXPOSE 8000
+
+# run.py lit PORT depuis l'environnement Railway au démarrage
+CMD ["python", "run.py"]
