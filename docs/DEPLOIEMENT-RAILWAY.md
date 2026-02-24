@@ -159,6 +159,32 @@ Si les logs montrent **`Uvicorn running`** puis peu après **`Shutting down`** /
 
 ---
 
+## Stripe : webhook et carte test
+
+### Webhook (marquer la commande comme payée)
+
+Quand un client paie avec Stripe, le backend doit recevoir l’événement `payment_intent.succeeded` pour passer la commande en « payée ». Pour cela :
+
+1. Va sur [Stripe Dashboard](https://dashboard.stripe.com) → **Developers** → **Webhooks** → **Add endpoint**.
+2. **URL** : `https://TON-URL-BACKEND/payments/webhook` (remplace par l’URL publique de ton backend, sans slash final).
+3. **Événements** : sélectionne `payment_intent.succeeded`.
+4. Crée l’endpoint, puis copie le **Signing secret** (ex. `whsec_...`).
+5. Dans Railway → **service Backend** → **Variables** : ajoute ou modifie **`STRIPE_WEBHOOK_SECRET`** avec cette valeur.
+
+Sans webhook, le paiement peut réussir côté Stripe mais la commande restera « en attente » en base.
+
+### Carte de test
+
+En mode test Stripe (clés `pk_test_...` / `sk_test_...`), tu peux utiliser une **carte de test** :
+
+- **Numéro** : `4242 4242 4242 4242`
+- **Date** : une date future (ex. 12/34)
+- **CVC** : n’importe quel code 3 chiffres (ex. 123)
+
+Sur le front, configure **`VITE_STRIPE_PUBLISHABLE_KEY`** (clé publique `pk_test_...`) pour afficher le formulaire de paiement par carte. Sans cette variable, seul le bouton « Payer (simulation) » est disponible.
+
+---
+
 ## Récap
 
 | Élément | Où | À retenir |
@@ -166,7 +192,7 @@ Si les logs montrent **`Uvicorn running`** puis peu après **`Shutting down`** /
 | Base de données | Service PostgreSQL | `DATABASE_URL` pour le backend |
 | API | Service Backend (root `server`) | URL publique → à mettre dans `VITE_API_URL` (front) et dans `CORS_ORIGINS` (back) |
 | Frontend | Service Frontend (root `client`) | URL publique → à mettre dans `CORS_ORIGINS` (back) |
-| Variables front | Service Frontend | `VITE_API_URL` = URL du backend (sans slash final) |
+| Variables front | Service Frontend | `VITE_API_URL` = URL du backend ; `VITE_STRIPE_PUBLISHABLE_KEY` = clé publique Stripe (optionnel) |
 | Variables back | Service Backend | `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGINS` (= URL du front), Stripe |
 
 Une fois ces étapes faites, back et front sont déployés sur Railway et le front utilise bien l’API en ligne.

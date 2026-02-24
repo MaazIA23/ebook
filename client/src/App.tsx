@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api } from "./api/http";
 import { useAuth } from "./store/AuthContext";
 import { useCart } from "./store/CartContext";
@@ -21,6 +21,21 @@ function App() {
   const [authMode, setAuthMode] = useState<"login" | "register" | null>(null);
   const [view, setView] = useState<"catalogue" | "cart" | "orders">("catalogue");
   const [checkoutOrder, setCheckoutOrder] = useState<CheckoutOrder | null>(null);
+  const [paymentSuccessOrderId, setPaymentSuccessOrderId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const success = params.get("payment_success");
+    const orderIdParam = params.get("order_id");
+    if (success === "1" && orderIdParam) {
+      const orderId = parseInt(orderIdParam, 10);
+      if (!Number.isNaN(orderId)) {
+        setPaymentSuccessOrderId(orderId);
+        setCheckoutOrder(null);
+        window.history.replaceState({}, "", window.location.pathname || "/");
+      }
+    }
+  }, []);
 
   const goToCatalogue = useCallback(() => {
     setView("catalogue");
@@ -44,6 +59,34 @@ function App() {
 
   if (authMode === "register" && !user) {
     return <RegisterPage onSuccess={() => setAuthMode(null)} />;
+  }
+
+  if (paymentSuccessOrderId !== null) {
+    return (
+      <div className="app-shell">
+        <main className="layout-main">
+          <div className="page-center">
+            <div className="card" style={{ textAlign: "center", maxWidth: 460 }}>
+              <h2 className="success-title">Paiement réussi</h2>
+              <p className="success-text">
+                Merci pour votre achat. Vous pouvez télécharger vos ebooks depuis « Mes achats ».
+              </p>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  clearCart();
+                  setPaymentSuccessOrderId(null);
+                  setView("catalogue");
+                }}
+                style={{ width: "100%", justifyContent: "center" }}
+              >
+                Retour au catalogue
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
   }
 
   return (
