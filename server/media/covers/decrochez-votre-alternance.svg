@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#070712"/>
+      <stop offset="1" stop-color="#02010a"/>
+    </linearGradient>
+    <radialGradient id="gold" cx="25%" cy="20%" r="70%">
+      <stop offset="0" stop-color="#facc6b" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#facc6b" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mist" cx="85%" cy="70%" r="70%">
+      <stop offset="0" stop-color="#a1a1aa" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#a1a1aa" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="675" fill="url(#gold)"/>
+  <rect width="1200" height="675" fill="url(#mist)"/>
+
+  <g opacity="0.9">
+    <circle cx="185" cy="150" r="42" fill="#facc6b"/>
+    <circle cx="210" cy="135" r="20" fill="#eab308"/>
+    <path d="M160 290 C 240 250, 330 330, 420 280" fill="none" stroke="#facc6b" stroke-opacity="0.55" stroke-width="6"/>
+  </g>
+
+  <g font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial" fill="#f9fafb">
+    <text x="110" y="360" font-size="56" font-weight="700" letter-spacing="0.5">
+      Décrochez votre alternance
+    </text>
+    <text x="110" y="415" font-size="26" fill="#a1a1aa">
+      CV &#8226; LinkedIn &#8226; candidatures &#8226; entretiens
+    </text>
+    <text x="110" y="470" font-size="22" fill="#a1a1aa">
+      Un guide concret pour passer &#224; l&#8217;action et obtenir un &#8220;oui&#8221;.
+    </text>
+  </g>
+
+  <rect x="80" y="80" width="1040" height="515" rx="26" ry="26" fill="none" stroke="#facc6b" stroke-opacity="0.25"/>
+</svg>
+
