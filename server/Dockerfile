@@ -18,4 +18,5 @@ RUN mkdir -p media/covers media/ebooks
 ENV PYTHONUNBUFFERED=1
 EXPOSE 8000
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Railway injecte PORT ; forme shell pour que $PORT soit développé au démarrage
+CMD uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}

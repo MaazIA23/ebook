@@ -27,10 +27,13 @@ export default function CataloguePage({ onAddToCart }: Props): React.JSX.Element
       .catch((err) => {
         console.error("Erreur chargement catalogue:", err);
         const msg = err.response?.data?.detail ?? err.message;
+        const isTimeout = err.code === "ECONNABORTED" || (typeof msg === "string" && msg.includes("timeout"));
         setError(
           err.code === "ERR_NETWORK"
             ? "Impossible de joindre l'API. Vérifiez que le backend est en ligne et que CORS autorise cette origine."
-            : `Impossible de charger le catalogue: ${typeof msg === "string" ? msg : JSON.stringify(msg)}`
+            : isTimeout
+              ? "Le serveur met un moment à répondre (réveil après inactivité). Réessayez dans quelques secondes."
+              : `Impossible de charger le catalogue: ${typeof msg === "string" ? msg : JSON.stringify(msg)}`
         );
       })
       .finally(() => {

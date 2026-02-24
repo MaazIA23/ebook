@@ -5,9 +5,10 @@ const API_BASE_ORIGIN = env.VITE_API_URL ?? "http://localhost:8000";
 /** En dev, on passe par le proxy Vite (/api et /static) pour éviter les soucis CORS. */
 const API_BASE = env.DEV ? "/api" : API_BASE_ORIGIN;
 
+/** 60s pour laisser le temps au backend Railway (cold start) de redémarrer après inactivité */
 export const api = axios.create({
   baseURL: API_BASE,
-  timeout: 15000,
+  timeout: 60000,
 });
 
 /** URL de base pour les assets (images) : en dev = même origine (proxy /static), en prod = API. */
