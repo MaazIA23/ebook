@@ -1,0 +1,3 @@
+#!/bin/sh
+# Railway injecte PORT ; ce script assure qu'il est bien utilisé
+exec uvicorn src.main:app --host 0.0.0.0 --port "${PORT:-8000}"
