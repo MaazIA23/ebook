@@ -27,7 +27,7 @@ class OrderItemResponse(BaseModel):
     price_cents: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class OrderItemDetailResponse(BaseModel):
@@ -43,7 +43,7 @@ class OrderResponse(BaseModel):
     items: List[OrderItemResponse]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class OrderDetailResponse(BaseModel):

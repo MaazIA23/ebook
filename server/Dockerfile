@@ -1,22 +1,30 @@
-# Backend API (FastAPI + uvicorn)
+# Image légère et stable
 FROM python:3.12-slim
+
+# Empêche Python d’écrire des .pyc
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Dépendances système pour psycopg2
-RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev gcc && rm -rf /var/lib/apt/lists/*
+# Dépendances système nécessaires (ex: psycopg2)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
+# Installer les dépendances Python
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
 
-COPY src/ ./src/
-COPY media/ ./media/
+# Copier le code
+COPY src ./src
+COPY media ./media
 
-# Créer media si vide (covers/ebooks peuvent être montés en volume ou ajoutés au build)
+# S'assurer que les dossiers media existent
 RUN mkdir -p media/covers media/ebooks
 
-ENV PYTHONUNBUFFERED=1
-EXPOSE 8000
-
-# Forme shell : sh développe $PORT (Railway) au démarrage
-CMD sh -c 'exec uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}'
+# Railway injecte automatiquement la variable PORT
+# IMPORTANT : ne pas mettre de fallback
+CMD ["sh", "-c", "uvicorn src.main:app --host 0.0.0.0 --port $PORT"]

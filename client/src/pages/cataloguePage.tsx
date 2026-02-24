@@ -18,7 +18,9 @@ export default function CataloguePage({ onAddToCart }: Props): React.JSX.Element
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadCatalogue = React.useCallback(() => {
+    setError(null);
+    setIsLoading(true);
     api
       .get("/products/")
       .then((res) => {
@@ -41,6 +43,10 @@ export default function CataloguePage({ onAddToCart }: Props): React.JSX.Element
       });
   }, []);
 
+  useEffect(() => {
+    loadCatalogue();
+  }, [loadCatalogue]);
+
   if (isLoading) {
     return (
       <div className="page-center">
@@ -58,6 +64,11 @@ export default function CataloguePage({ onAddToCart }: Props): React.JSX.Element
           <h2 className="card-title">Catalogue</h2>
           <p className="error">{error}</p>
           <p className="card-subtitle">API attendue: {api.defaults.baseURL}</p>
+          <p style={{ marginTop: "1rem" }}>
+            <button type="button" className="btn btn-primary" onClick={loadCatalogue}>
+              Réessayer
+            </button>
+          </p>
         </div>
       </div>
     );

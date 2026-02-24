@@ -35,7 +35,7 @@ class UserResponse(BaseModel):
     role: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
