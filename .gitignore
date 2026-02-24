@@ -20,3 +20,18 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+
+# Python
+venv/
+server/venv/
+server/.env
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node
+node_modules/
+client/dist/
+.env
+.env.local
+.vercel

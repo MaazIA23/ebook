@@ -20,7 +20,7 @@ export default function CataloguePage({ onAddToCart }: Props): React.JSX.Element
 
   useEffect(() => {
     api
-      .get("/products")
+      .get("/products/")
       .then((res) => {
         setProducts(Array.isArray(res.data) ? res.data : []);
       })
@@ -29,7 +29,7 @@ export default function CataloguePage({ onAddToCart }: Props): React.JSX.Element
         const msg = err.response?.data?.detail ?? err.message;
         setError(
           err.code === "ERR_NETWORK"
-            ? "Impossible de joindre l'API. Démarrez le backend (uvicorn) sur http://localhost:8000"
+            ? "Impossible de joindre l'API. Vérifiez que le backend est en ligne et que CORS autorise cette origine."
             : `Impossible de charger le catalogue: ${typeof msg === "string" ? msg : JSON.stringify(msg)}`
         );
       })

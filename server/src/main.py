@@ -1,5 +1,8 @@
 import os
 
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -20,6 +23,16 @@ app = FastAPI(
     version="0.1.0",
 )
 
+
+class ProxyHeadersMiddleware(BaseHTTPMiddleware):
+    """En prod (Railway, etc.), le proxy envoie X-Forwarded-Proto. On force le scheme en https pour que les redirections (ex. /products -> /products/) pointent vers HTTPS."""
+    async def dispatch(self, request: Request, call_next):
+        if request.headers.get("x-forwarded-proto") == "https":
+            request.scope["scheme"] = "https"
+        return await call_next(request)
+
+
+app.add_middleware(ProxyHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS_LIST,
