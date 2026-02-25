@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { useAuth } from "../store/AuthContext";
 
+function isValidEmail(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed.includes("@")) return false;
+  const [local, domain] = trimmed.split("@");
+  return local.length > 0 && domain.length > 0 && domain.includes(".");
+}
+
 type Props = {
   onSuccess?: () => void;
 };
@@ -15,9 +22,15 @@ const LoginPage: React.FC<Props> = ({ onSuccess }) => {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (!isValidEmail(email)) {
+      setError("Veuillez entrer une adresse email valide (ex. nom@exemple.com).");
+      return;
+    }
+
     setLoading(true);
     try {
-      await login(email, password);
+      await login(email.trim(), password);
       if (onSuccess) onSuccess();
     } catch (err) {
       setError("Email ou mot de passe incorrect");
@@ -39,6 +52,7 @@ const LoginPage: React.FC<Props> = ({ onSuccess }) => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="nom@exemple.com"
               required
             />
           </div>

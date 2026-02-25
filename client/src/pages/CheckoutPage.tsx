@@ -152,9 +152,6 @@ export default function CheckoutPage({ orderId, totalCents, items, onBack, onSuc
       <div className="page-center">
         <div className="card" style={{ maxWidth: 460 }}>
           <h2 className="card-title">Paiement par carte</h2>
-          <p className="card-subtitle">
-            Utilisez une carte de test : <strong>4242 4242 4242 4242</strong>, date future, CVC quelconque.
-          </p>
           <div className="checkout-summary" style={{ marginBottom: "1rem" }}>
             <p className="checkout-price">Total : {(totalCents / 100).toFixed(2)} €</p>
           </div>

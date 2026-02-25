@@ -2,6 +2,20 @@ import React, { useState } from "react";
 import { register } from "../api/auth";
 import { useAuth } from "../store/AuthContext";
 
+function isValidEmail(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed.includes("@")) return false;
+  const [local, domain] = trimmed.split("@");
+  return local.length > 0 && domain.length > 0 && domain.includes(".");
+}
+
+function isStrongPassword(value: string): boolean {
+  if (value.length < 8) return false;
+  const hasLetter = /[a-zA-Z]/.test(value);
+  const hasNumber = /[0-9]/.test(value);
+  return hasLetter && hasNumber;
+}
+
 type Props = {
   onSuccess?: () => void;
 };
@@ -18,10 +32,20 @@ const RegisterPage: React.FC<Props> = ({ onSuccess }) => {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (!isValidEmail(email)) {
+      setError("Veuillez entrer une adresse email valide (ex. nom@exemple.com).");
+      return;
+    }
+    if (!isStrongPassword(password)) {
+      setError("Choisissez un mot de passe plus fort : au moins 8 caractères, avec des lettres et des chiffres.");
+      return;
+    }
+
     setLoading(true);
     try {
-      await register(email, password, firstName, lastName);
-      await login(email, password);
+      await register(email.trim(), password, firstName, lastName);
+      await login(email.trim(), password);
       if (onSuccess) onSuccess();
     } catch (err) {
       setError("Impossible de créer le compte. Essayez un autre email.");
@@ -63,6 +87,7 @@ const RegisterPage: React.FC<Props> = ({ onSuccess }) => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="nom@exemple.com"
               required
             />
           </div>
@@ -75,6 +100,9 @@ const RegisterPage: React.FC<Props> = ({ onSuccess }) => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <p className="form-hint">
+              Utilisez au moins 8 caractères, avec des lettres et des chiffres, pour un mot de passe sécurisé.
+            </p>
           </div>
           {error && <p className="error">{error}</p>}
           <button
