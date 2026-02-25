@@ -22,9 +22,10 @@ RUN pip install --no-cache-dir --upgrade pip \
 COPY src ./src
 COPY media ./media
 COPY run.py .
+COPY seed_products.py .
 
 # S'assurer que les dossiers media existent
-RUN mkdir -p media/covers media/ebooks
+RUN mkdir -p media/covers media/ebooks media/samples
 
 EXPOSE 8000
 
