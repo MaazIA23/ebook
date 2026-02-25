@@ -1,74 +1,25 @@
-# React + TypeScript + Vite
+# Client – Boutique d’ebooks
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend React (Vite + TypeScript) de la boutique d’ebooks : catalogue, panier, checkout Stripe, compte utilisateur.
 
-Currently, two official plugins are available:
+## Commandes
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+| Commande | Description |
+|----------|-------------|
+| `npm install` | Installer les dépendances |
+| `npm run dev` | Lancer le serveur de dev (proxy vers l’API sur le port 8000) |
+| `npm run build` | Build de production (dossier `dist/`) |
+| `npm run preview` | Prévisualiser le build |
 
-## React Compiler
+## Variables d’environnement
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Copier `.env.example` vers `.env` et renseigner :
 
-## Expanding the ESLint configuration
+- **`VITE_API_URL`** (obligatoire en production) : URL du backend, sans slash final (ex. `https://ton-api.up.railway.app`). En dev, si non définie, le proxy Vite cible `http://localhost:8000`.
+- **`VITE_STRIPE_PUBLISHABLE_KEY`** (optionnel) : clé publique Stripe pour afficher le formulaire de paiement par carte (`pk_test_...` ou `pk_live_...`). Sans elle, seul le mode simulation est disponible.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Les variables `VITE_*` sont injectées **au build** ; après modification en production, il faut redéployer.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Documentation complète
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
- 
+Voir le **README principal** à la racine du projet et **docs/DEPLOIEMENT-RAILWAY.md** pour le déploiement.

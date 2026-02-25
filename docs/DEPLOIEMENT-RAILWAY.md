@@ -130,11 +130,9 @@ Pour que le navigateur autorise les appels du front vers l’API :
    Si tu vois encore « Impossible de joindre l’API », vérifie que **`VITE_API_URL`** est bien définie sur le **service frontend** et que tu as bien **redéployé** le front après l’avoir ajoutée.
 
 3. **Base de données (seed)**  
-   Pour avoir des produits dans le catalogue, exécute le seed **une fois** avec l’URL de la base Railway :
-   - Soit en local : dans `server`, définis `DATABASE_URL` avec l’URL **externe** de la base Railway, puis lance `python seed_products.py`.
-   - Soit via Railway : **Backend** → **Settings** → **Shell** (si disponible) et exécute depuis le répertoire du backend :  
-     `python seed_products.py`  
-   (en t’assurant que `DATABASE_URL` est bien celle de la base Railway).
+   Le backend exécute **automatiquement** le seed au démarrage (`run.py`). Les produits (titres, prix, descriptions, **URLs d’extraits**) sont donc mis à jour à chaque déploiement.  
+   Si besoin de lancer le seed à la main (ex. première fois avant ce comportement) : dans `server`, avec `DATABASE_URL` pointant vers la base Railway, exécuter `python seed_products.py`.  
+   Les **extraits** (« Voir un extrait ») sont servis depuis `media/samples/` (inclus dans l’image Docker) ; ils sont générés en amont par `python scripts/extract_samples.py` (voir `server/media/samples/README.md`).
 
 ---
 

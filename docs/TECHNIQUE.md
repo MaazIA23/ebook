@@ -13,7 +13,8 @@ Ce document décrit les choix techniques, l’architecture, les variables d’en
 - **Backend (`server/`)** : Python 3.12 + FastAPI + Uvicorn.
 - **Base de données** : PostgreSQL (SQLAlchemy, pas de migrations Alembic en prod pour l’instant).
 - **Paiement** : Stripe (PaymentIntent + webhook + mode mock optionnel).
-- **Fichiers** : PDF et couvertures servis par FastAPI (`/static` depuis `server/media/`).
+- **Fichiers** : PDF et couvertures servis par FastAPI (`/static` depuis `server/media/`). Extraits PDF (3 premières pages) dans `media/samples/` pour le lien « Voir un extrait » sur le catalogue.
+- **Impact conversion** : aperçu PDF (extrait), rappel panier (bandeau sur le catalogue).
 - **Déploiement** : Railway (backend + frontend + PostgreSQL), ou Render/Vercel selon `DEPLOIEMENT.md` / `DEPLOIEMENT-RAILWAY.md`.
 
 Les détails complets d’architecture sont dans `ARCHITECTURE.md`.
@@ -33,7 +34,7 @@ Les détails complets d’architecture sont dans `ARCHITECTURE.md`.
 Tables prévues (détaillées dans `ARCHITECTURE.md`) :
 
 - `users` : informations de compte, rôle (customer / admin).
-- `products` : ebooks avec prix, description, lien vers fichier PDF.
+- `products` : ebooks avec prix, description, lien vers fichier PDF, optionnellement `sample_pdf_url` (extrait 3 premières pages).
 - `orders` : commandes passées par les utilisateurs.
 - `order_items` : association commande ↔ produit.
 - `downloads` (optionnel) : historique des téléchargements.
@@ -78,6 +79,10 @@ Liste complète (détail dans `server/.env.example`) :
 | `CORS_ORIGINS` | Origines autorisées (CORS) | URL du frontend en prod, sans slash final (ex. `https://monapp.up.railway.app`). |
 | `PAYMENTS_MOCK_ENABLED` | Mode mock paiement | `0` en prod, `1` en dev si besoin. |
 | `PORT` | Port d’écoute (backend) | **Injecté par Railway** ; ne pas définir à la main. Le backend lit cette variable via `server/run.py`. |
+
+**Seed au démarrage** : `server/run.py` exécute `seed_products.main()` avant de lancer uvicorn. En production (Railway), les produits sont donc mis à jour à chaque déploiement (dont les URLs d’extraits `sample_pdf_url`). En cas d’échec du seed (ex. base injoignable), l’erreur est loguée mais le serveur démarre quand même.
+
+**Extraits PDF** : le script `server/scripts/extract_samples.py` extrait les 3 premières pages des PDF dans `media/ebooks/` et les enregistre dans `media/samples/<nom>-extrait.pdf`. Si un PDF source est absent, un placeholder (3 pages vides) est créé. Les URLs sont servies sous `/static/samples/` et enregistrées en base via le seed (`sample_pdf_url`).
 
 **Frontend (build Vite)** :
 
