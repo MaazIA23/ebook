@@ -7,6 +7,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from sqlalchemy import text
+
 from src.db.database import Base, engine
 from src.routes import auth, products, orders, payments, downloads
 
@@ -17,6 +19,15 @@ try:
 except Exception as e:
     import sys
     print(f"Warning: create_all failed: {e}", file=sys.stderr)
+
+# Migration : ajouter long_description si elle n'existe pas (pour déploiement Railway / BDD existantes)
+try:
+    with engine.connect() as conn:
+        conn.execute(text("ALTER TABLE products ADD COLUMN IF NOT EXISTS long_description TEXT;"))
+        conn.commit()
+except Exception as e:
+    import sys
+    print(f"Warning: migration long_description failed: {e}", file=sys.stderr)
 
 # CORS : en prod, définir CORS_ORIGINS (ex. "https://monapp.vercel.app")
 _cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:5174")
