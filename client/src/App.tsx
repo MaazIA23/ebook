@@ -241,7 +241,7 @@ function App() {
               <div className="author-content">
                 <h2 className="author-title">Biographie de l&apos;auteur</h2>
                 <p className="author-text">
-                  Mazidath Bello est une auteure béninoise, coach en éloquence et fondatrice de &quot;La Muse Éloquente&quot;. Championne nationale d&apos;éloquence en France, elle accompagne des centaines de personnes à révéler leur potentiel oratoire. Forte d&apos;une communauté de plus de 50&nbsp;000 abonnés, elle inspire la jeunesse africaine et francophone à prendre la parole avec confiance. &quot;Chroniques d&apos;une voix qui s&apos;est révélée&quot; est son premier ouvrage autobiographique.
+                  Mazidath Bello est une auteure béninoise, coach en éloquence et fondatrice de &quot;La Muse Éloquente&quot;. Championne nationale d&apos;éloquence en France, elle accompagne des centaines de personnes à révéler leur potentiel oratoire. Forte d&apos;une communauté de plus de 70&nbsp;000 abonnés, elle inspire la jeunesse africaine et francophone à prendre la parole avec confiance. &quot;Chroniques d&apos;une voix qui s&apos;est révélée&quot; est son premier ouvrage autobiographique. Ses ebooks vous donnent les méthodes concrètes pour transformer votre prise de parole, étape par étape. Des centaines de personnes ont déjà franchi le cap grâce à ses techniques. Découvrez dès maintenant les outils qui vous permettront de briller à l&apos;oral.
                 </p>
               </div>
             </section>

@@ -269,14 +269,17 @@ a {
   overflow: hidden;
   border: 1px solid var(--navy-border);
   box-shadow: var(--shadow-soft);
-  aspect-ratio: 1;
-  max-width: 200px;
+  aspect-ratio: 3 / 4;
+  width: 180px;
+  max-width: 100%;
+  background: #fff;
 }
 
 .author-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 25%;
   display: block;
 }
 
