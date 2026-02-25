@@ -18,6 +18,7 @@ router = APIRouter(prefix="/products", tags=["products"])
 class ProductBase(BaseModel):
     title: str
     description: str | None = None
+    long_description: str | None = None
     price_cents: int
     cover_image_url: str | None = None
     file_key: str
@@ -30,6 +31,7 @@ class ProductCreate(ProductBase):
 class ProductUpdate(BaseModel):
     title: str | None = None
     description: str | None = None
+    long_description: str | None = None
     price_cents: int | None = None
     cover_image_url: str | None = None
     file_key: str | None = None

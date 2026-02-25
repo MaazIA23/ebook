@@ -86,11 +86,11 @@ function App() {
                 onClick={() => {
                   clearCart();
                   setPaymentSuccessOrderId(null);
-                  setView("catalogue");
+                  setView("orders");
                 }}
                 style={{ width: "100%", justifyContent: "center" }}
               >
-                Retour au catalogue
+                Voir mes achats
               </button>
             </div>
           </div>
@@ -110,14 +110,17 @@ function App() {
               setCheckoutOrder(null);
             }}
           >
-            <div className="brand-logo" />
             <div>
-              <div className="brand-title">Ebook Store</div>
-              <div className="brand-subtitle">Guides & récits pour étudiants</div>
+              <div className="brand-title">La Muse Eloquente</div>
             </div>
           </div>
 
           <div className="nav-right">
+            {user && (
+              <span className="nav-user">
+                Bonjour <strong>{user.first_name || user.email}</strong>
+              </span>
+            )}
             <button
               type="button"
               className="nav-cart"
@@ -127,11 +130,6 @@ function App() {
               🛒 Panier
               {cartCount > 0 && <span className="nav-cart-count">{cartCount}</span>}
             </button>
-            {user && (
-              <span className="nav-user">
-                Bonjour <strong>{user.first_name || user.email}</strong>
-              </span>
-            )}
             {user ? (
               <>
                 <button className="btn btn-ghost" onClick={() => { setView(view === "orders" ? "catalogue" : "orders"); setCheckoutOrder(null); }}>
@@ -159,38 +157,9 @@ function App() {
         {view === "catalogue" && !checkoutOrder && (
           <section className="hero">
             <div>
-              <div className="hero-badge">
-                <span className="hero-badge-dot" />
-                Projet d&apos;école • Application déployée
-              </div>
-              <h1 className="hero-title">
-                Construis ta carrière avec nos{" "}
-                <span className="hero-highlight">ebooks pensés pour les étudiants</span>.
-              </h1>
-              <p className="hero-text">
-                Des guides concrets pour décrocher ton alternance, des récits pour te motiver, et une
-                expérience d&apos;achat simple pensée pour ton projet de fin d&apos;année.
+              <p className="hero-footer-text">
+                La Muse Eloquente – Boutique d&apos;ebooks
               </p>
-            </div>
-            <div className="hero-card">
-              <div className="badge">
-                <span className="badge-dot" />
-                Paiement sécurisé par Stripe
-              </div>
-              <div className="hero-metrics">
-                <div className="metric">
-                  <div className="metric-label">Guides carrière</div>
-                  <div className="metric-value">Alternance & 1er job</div>
-                </div>
-                <div className="metric">
-                  <div className="metric-label">Format</div>
-                  <div className="metric-value">PDF téléchargeables</div>
-                </div>
-                <div className="metric">
-                  <div className="metric-label">Accès</div>
-                  <div className="metric-value">Illimité après achat</div>
-                </div>
-              </div>
             </div>
           </section>
         )}
@@ -208,7 +177,7 @@ function App() {
               totalCents={checkoutOrder.totalCents}
               items={checkoutOrder.items}
               onBack={() => setCheckoutOrder(null)}
-              onSuccess={() => { clearCart(); setCheckoutOrder(null); }}
+              onSuccess={() => { clearCart(); setCheckoutOrder(null); setView("orders"); }}
             />
           </section>
         ) : view === "cart" ? (
@@ -230,7 +199,7 @@ function App() {
                   {false ? "Finaliser votre achat" : "Catalogue d’ebooks"}
                 </h2>
                 <p className="section-subtitle">
-                  Ajoutez des ebooks à votre panier, puis validez votre commande depuis le panier.
+                  Méthodes et techniques pour transformer votre élocution et révéler l&apos;orateur en vous.
                 </p>
               </div>
             </div>
@@ -253,7 +222,7 @@ function App() {
       </main>
 
       <footer className="footer">
-        Projet d&apos;école – Boutique d&apos;ebooks • Backend FastAPI + Front React • PostgreSQL & Stripe
+        La Muse Eloquente – Boutique d&apos;ebooks
       </footer>
     </div>
   );

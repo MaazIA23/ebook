@@ -183,6 +183,26 @@ En mode test Stripe (clés `pk_test_...` / `sk_test_...`), tu peux utiliser une 
 
 Sur le front, configure **`VITE_STRIPE_PUBLISHABLE_KEY`** (clé publique `pk_test_...`) pour afficher le formulaire de paiement par carte. Sans cette variable, seul le bouton « Payer (simulation) » est disponible.
 
+### Difficultés rencontrées et corrections
+
+1. **Formulaire carte ne s’affichait pas**  
+   L’app affichait une alerte « Paiement simulé » au lieu du formulaire Stripe. **Cause :** la variable **`VITE_STRIPE_PUBLISHABLE_KEY`** n’était pas définie sur le service frontend Railway (ou le front n’avait pas été redéployé après l’ajout). Les variables `VITE_*` sont injectées **au build**. **Correction :** ajouter `VITE_STRIPE_PUBLISHABLE_KEY` sur le service Frontend puis **redéployer** le front.
+
+2. **Statut de la commande restait « pending » après paiement**  
+   Le paiement Stripe réussissait mais la commande restait en attente. **Causes possibles :**  
+   - Le webhook Stripe n’était pas configuré ou le secret incorrect.  
+   - L’appel à **`POST /payments/confirm-paid`** n’était pas fait ou échouait.  
+   - Au **retour après 3DS**, la page se chargeait et l’appel à `confirm-paid` partait **avant** que le token d’authentification soit restauré → requête sans `Authorization` → 401, la commande n’était pas mise à jour.  
+   **Corrections :**  
+   - Endpoint **`/payments/confirm-paid`** : le backend vérifie le statut du PaymentIntent chez Stripe et met la commande en `paid`.  
+   - Le front appelle `confirm-paid` après un paiement réussi (CheckoutPage) et aussi au retour 3DS (App), mais **uniquement quand l’auth est prête** (`loading === false`), avec un `useRef` pour ne pas appeler plusieurs fois.  
+   - Côté backend : si Stripe renvoie le PaymentIntent en `processing` (cas possible juste après 3DS), on attend 2 secondes, on re-récupère le PaymentIntent puis on revérifie avant de mettre à jour le statut.
+
+3. **Résumé**  
+   Pour que le flux soit fiable : configurer le webhook Stripe (recommandé) **et** utiliser `confirm-paid` côté front après succès (y compris au retour 3DS, une fois l’auth chargée). Les deux mécanismes peuvent coexister.
+
+Voir aussi **`docs/CHANGELOG.md`** (sections 11, 12, 13) pour le détail des problèmes et des références de code.
+
 ---
 
 ## Récap

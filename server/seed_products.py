@@ -13,10 +13,20 @@ from src.models.order import Order, OrderItem  # noqa: F401,E402
 from src.models.user import User  # noqa: F401,E402
 
 
-def upsert_product(db, *, title: str, description: str, price_cents: int, file_key: str, cover_image_url: str | None = None):
+def upsert_product(
+    db,
+    *,
+    title: str,
+    description: str,
+    long_description: str | None = None,
+    price_cents: int,
+    file_key: str,
+    cover_image_url: str | None = None,
+):
     existing = db.query(Product).filter(Product.title == title).first()
     if existing:
         existing.description = description
+        existing.long_description = long_description
         existing.price_cents = price_cents
         existing.file_key = file_key
         existing.cover_image_url = cover_image_url
@@ -26,6 +36,7 @@ def upsert_product(db, *, title: str, description: str, price_cents: int, file_k
     product = Product(
         title=title,
         description=description,
+        long_description=long_description,
         price_cents=price_cents,
         file_key=file_key,
         cover_image_url=cover_image_url,
@@ -48,6 +59,15 @@ def main():
                 "Le guide pratique pour trouver une alternance rapidement : CV, LinkedIn, "
                 "candidatures efficaces, préparation aux entretiens et exemples de messages."
             ),
+            long_description=(
+                "L’ouvrage est structuré en plusieurs parties. La première porte sur la construction "
+                "d’un CV adapté à l’alternance et l’optimisation de votre profil LinkedIn. La deuxième "
+                "aborde les stratégies de candidature : où chercher, comment cibler les entreprises, "
+                "quels messages envoyer pour décrocher un entretien. La troisième partie est consacrée "
+                "à la préparation aux entretiens : questions fréquentes, exemples de réponses et conseils "
+                "pour rester naturel. En fin d’ouvrage, vous trouverez des modèles de messages de "
+                "relance et des pistes pour négocier votre contrat."
+            ),
             price_cents=1490,
             file_key="ebooks/decrochez-votre-alternance.pdf",
             cover_image_url="/static/covers/decrochez-votre-alternance.png",
@@ -60,6 +80,14 @@ def main():
                 "Un recueil intime de textes courts : doutes, déclics et reconstruction. "
                 "Une voix qui se cherche, puis se révèle."
             ),
+            long_description=(
+                "Le recueil rassemble une série de textes brefs, tantôt sous forme de réflexions, "
+                "tantôt de courtes narrations. Les thèmes traversés sont le doute, la quête de soi, "
+                "les moments de bascule où une décision ou une prise de conscience change le cours des choses, "
+                "et la reconstruction personnelle. L’ensemble dessine un parcours où la voix — au sens "
+                "de parole et d’identité — se cherche d’abord, puis se déploie. Le ton est intime "
+                "et accessible, sans être moralisateur."
+            ),
             price_cents=990,
             file_key="ebooks/chroniques-une-voix-qui-sest-revelee.pdf",
             cover_image_url="/static/covers/chroniques-une-voix-qui-sest-revelee.png",
@@ -71,6 +99,15 @@ def main():
             description=(
                 "Un ebook pour améliorer votre élocution et votre prise de parole : "
                 "exercices, conseils et astuces pour une diction claire et assurée."
+            ),
+            long_description=(
+                "L’ebook commence par une présentation des bases de la diction : respiration, placement "
+                "de la voix, articulation. Il propose ensuite des exercices progressifs — travail des "
+                "voyelles et des consonnes, lecture à voix haute, variété des rythmes — avec des indications "
+                "concrètes pour s’entraîner au quotidien. Une partie est dédiée à la prise de parole en public : "
+                "gestion du stress, posture, regard et clarté du message. En fin d’ouvrage, des fiches "
+                "récapitulatives permettent de retrouver rapidement les points clés et les enchaînements "
+                "d’exercices recommandés."
             ),
             price_cents=1290,
             file_key="ebooks/ebook-le-secret-dune-belle-diction.pdf",

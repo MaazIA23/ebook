@@ -11,6 +11,7 @@ class Product(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
     description = Column(Text, nullable=True)
+    long_description = Column(Text, nullable=True)  # description détaillée pour la modal
     price_cents = Column(Integer, nullable=False)
     cover_image_url = Column(String, nullable=True)
     file_key = Column(String, nullable=False)  # chemin/clé du PDF dans le stockage

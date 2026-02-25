@@ -140,6 +140,61 @@ Vérifier dans **Settings** du service backend la configuration du **Health Chec
 
 ---
 
+### Intégration Stripe – Paiement par carte et statut « paid »
+
+#### 11. Formulaire carte Stripe ne s’affiche pas (alerte « Paiement simulé »)
+
+**Problème :**  
+Sur l’app déployée, après avoir cliqué sur « Payer », une alerte affichait « Paiement simulé ! » avec un `client_secret` au lieu du formulaire de saisie de carte (Stripe Payment Element). Impossible d’entrer la carte test ou les informations client.
+
+**Cause :**  
+La clé **publique** Stripe (`pk_test_...`) doit être connue du **frontend** au moment du **build**. Elle est injectée via la variable d’environnement **`VITE_STRIPE_PUBLISHABLE_KEY`**. Sans cette variable sur le **service frontend** Railway (ou sans redéploiement après l’avoir ajoutée), le front utilise le mode « simulation » (bouton qui appelle uniquement `mock-confirm` sans formulaire carte).
+
+**Solution :**  
+1. Récupérer la **Publishable key** sur [Stripe Dashboard](https://dashboard.stripe.com/test/apikeys).  
+2. Sur Railway → **service Frontend** → **Variables** : ajouter **`VITE_STRIPE_PUBLISHABLE_KEY`** = `pk_test_...`.  
+3. **Redéployer** le frontend (les variables `VITE_*` sont prises en compte au build).  
+
+En local : définir `VITE_STRIPE_PUBLISHABLE_KEY` dans `client/.env` et redémarrer `npm run dev`.
+
+**Référence :** `client/src/pages/CheckoutPage.tsx`, `docs/DEPLOIEMENT-RAILWAY.md` (section Stripe).
+
+---
+
+#### 12. Commande reste en « pending » après un paiement réussi
+
+**Problème :**  
+Le paiement Stripe se termine correctement (carte test acceptée, page de succès affichée), mais dans « Mes achats » le statut de la commande reste **pending**. Le bouton « Télécharger » reste indisponible ou renvoie une erreur.
+
+**Cause :**  
+Le passage du statut à **paid** repose sur deux mécanismes :  
+- Le **webhook** Stripe (`payment_intent.succeeded`) vers `POST /payments/webhook` — si le webhook n’est pas configuré ou que le secret est incorrect, la commande n’est pas mise à jour.  
+- Un appel **frontend** à **`POST /payments/confirm-paid`** après succès du paiement : le backend vérifie auprès de Stripe que le PaymentIntent est en `succeeded` et met la commande à jour.  
+
+Si cet appel n’est pas fait (ou échoue), la commande reste en pending.
+
+**Solutions appliquées :**  
+
+1. **Endpoint `POST /payments/confirm-paid`** (backend) : reçoit `order_id`, vérifie que la commande appartient à l’utilisateur, récupère le PaymentIntent chez Stripe ; si le statut est `succeeded` (ou après un court délai si Stripe renvoie encore `processing`), met `order.status = "paid"`.  
+2. **Appel depuis le frontend** :  
+   - Dans **CheckoutPage** : après un `stripe.confirmPayment()` réussi (sans redirection 3DS), appel à `confirm-paid` puis affichage de la page de succès.  
+   - Lors du **retour après 3DS** : l’utilisateur est redirigé vers l’app avec `?payment_success=1&order_id=...`. L’appel à `confirm-paid` doit être fait **une fois l’authentification prête** (token restauré), sinon la requête part sans `Authorization` et le backend renvoie 401.  
+3. **Déclencher `confirm-paid` après auth** : dans `App.tsx`, un `useEffect` appelle `confirm-paid` uniquement quand `loading` (auth) est à `false` et qu’on a un `paymentSuccessOrderId`. Un `useRef` évite les appels en double.  
+4. **Stripe renvoie parfois « processing »** : juste après 3DS, le PaymentIntent peut être encore en `processing` avant de passer à `succeeded`. Côté backend, si le statut est `processing`, on attend 2 secondes, on re-récupère le PaymentIntent puis on revérifie ; si c’est `succeeded`, on met la commande à jour.
+
+**Référence :** `server/src/routes/payments.py` (confirm-paid, webhook), `client/src/pages/CheckoutPage.tsx`, `client/src/App.tsx`, `docs/DEPLOIEMENT-RAILWAY.md` (section Stripe).
+
+---
+
+#### 13. Récapitulatif technique Stripe
+
+- **Backend** : `POST /payments/create-intent` (crée le PaymentIntent), `POST /payments/confirm-paid` (vérifie le statut Stripe et met la commande en paid), `POST /payments/webhook` (reçoit `payment_intent.succeeded`, met la commande en paid).  
+- **Frontend** : formulaire Stripe (Payment Element) quand `VITE_STRIPE_PUBLISHABLE_KEY` est défini ; après succès, appel à `confirm-paid` ; au retour 3DS, appel à `confirm-paid` une fois l’auth prête.  
+- **Variables** : backend = `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` ; frontend (build) = `VITE_STRIPE_PUBLISHABLE_KEY`.  
+- **Carte test** : 4242 4242 4242 4242, date future, CVC quelconque.
+
+---
+
 ### Autres modifications
 
 - **Dockerfile backend** : image Python 3.12-slim, dépendances système pour psycopg2, utilisation de `run.py` pour le port.

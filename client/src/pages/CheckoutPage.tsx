@@ -68,7 +68,9 @@ function PaymentForm({
 
   return (
     <form onSubmit={handleSubmit} className="checkout-stripe-form">
-      <PaymentElement options={{ layout: "tabs" }} />
+      <div className="stripe-payment-element-wrapper">
+        <PaymentElement options={{ layout: "tabs" }} />
+      </div>
       <button
         type="submit"
         className="btn btn-primary"
@@ -138,7 +140,7 @@ export default function CheckoutPage({ orderId, totalCents, items, onBack, onSuc
             depuis « Mes achats » une fois le paiement confirmé.
           </p>
           <button className="btn btn-primary" onClick={onSuccess} style={{ width: "100%", justifyContent: "center" }}>
-            Retour au catalogue
+            Voir mes achats
           </button>
         </div>
       </div>
