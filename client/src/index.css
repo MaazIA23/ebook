@@ -509,6 +509,21 @@ a {
   color: var(--text-soft);
 }
 
+.auth-choice-card {
+  max-width: 400px;
+}
+
+.auth-choice-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.auth-choice-buttons .btn {
+  width: 100%;
+  justify-content: center;
+}
+
 .form-field {
   margin-bottom: 0.95rem;
 }

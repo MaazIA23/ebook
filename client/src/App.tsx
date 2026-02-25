@@ -18,7 +18,8 @@ type CheckoutOrder = {
 function App() {
   const { user, logout, loading } = useAuth();
   const { count: cartCount, items: cartItems, clearCart, addItem } = useCart();
-  const [authMode, setAuthMode] = useState<"login" | "register" | null>(null);
+  const [authMode, setAuthMode] = useState<"login" | "register" | "choice" | null>(null);
+  const [pendingAddToCart, setPendingAddToCart] = useState<{ id: number; title: string; priceCents: number } | null>(null);
   const [view, setView] = useState<"catalogue" | "cart" | "orders">("catalogue");
   const [checkoutOrder, setCheckoutOrder] = useState<CheckoutOrder | null>(null);
   const [paymentSuccessOrderId, setPaymentSuccessOrderId] = useState<number | null>(null);
@@ -63,12 +64,53 @@ function App() {
     );
   }
 
+  const onAuthSuccess = useCallback(() => {
+    setAuthMode(null);
+    if (pendingAddToCart) {
+      addItem(pendingAddToCart);
+      setPendingAddToCart(null);
+    }
+  }, [pendingAddToCart, addItem]);
+
+  if (authMode === "choice" && !user) {
+    return (
+      <div className="app-shell">
+        <main className="layout-main">
+          <div className="page-center">
+            <div className="card auth-choice-card">
+              <h1 className="card-title">Pour acheter cet ebook</h1>
+              <p className="card-subtitle">
+                Connectez-vous à votre compte ou créez-en un pour continuer.
+              </p>
+              <div className="auth-choice-buttons">
+                <button type="button" className="btn btn-primary" onClick={() => setAuthMode("register")}>
+                  Créer un compte
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={() => setAuthMode("login")}>
+                  Se connecter
+                </button>
+              </div>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => { setAuthMode(null); setPendingAddToCart(null); }}
+                style={{ marginTop: "0.5rem" }}
+              >
+                Retour au catalogue
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   if (authMode === "login" && !user) {
-    return <LoginPage onSuccess={() => setAuthMode(null)} />;
+    return <LoginPage onSuccess={onAuthSuccess} />;
   }
 
   if (authMode === "register" && !user) {
-    return <RegisterPage onSuccess={() => setAuthMode(null)} />;
+    return <RegisterPage onSuccess={onAuthSuccess} />;
   }
 
   if (paymentSuccessOrderId !== null) {
@@ -141,11 +183,11 @@ function App() {
               </>
             ) : (
               <>
-                <button className="btn btn-ghost" onClick={() => setAuthMode("login")}>
-                  Se connecter
-                </button>
                 <button className="btn btn-primary" onClick={() => setAuthMode("register")}>
                   Créer un compte
+                </button>
+                <button className="btn btn-ghost" onClick={() => setAuthMode("login")}>
+                  Se connecter
                 </button>
               </>
             )}
@@ -209,7 +251,8 @@ function App() {
             <CataloguePage
               onAddToCart={(p) => {
                 if (!user) {
-                  setAuthMode("login");
+                  setPendingAddToCart({ id: p.id, title: p.title, priceCents: p.priceCents });
+                  setAuthMode("choice");
                   return;
                 }
                 addItem({ id: p.id, title: p.title, priceCents: p.priceCents });
