@@ -57,6 +57,11 @@ function PaymentForm({
       setLoading(false);
       return;
     }
+    try {
+      await api.post("/payments/confirm-paid", { order_id: orderId });
+    } catch {
+      // Le webhook peut aussi mettre à jour le statut ; on affiche quand même le succès
+    }
     onSuccess();
     setLoading(false);
   }

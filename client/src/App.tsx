@@ -33,6 +33,7 @@ function App() {
         setPaymentSuccessOrderId(orderId);
         setCheckoutOrder(null);
         window.history.replaceState({}, "", window.location.pathname || "/");
+        api.post("/payments/confirm-paid", { order_id: orderId }).catch(() => {});
       }
     }
   }, []);

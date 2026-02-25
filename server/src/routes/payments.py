@@ -63,6 +63,40 @@ def create_payment_intent(
     return CreatePaymentIntentResponse(client_secret=payment_intent.client_secret)  # type: ignore[arg-type]
 
 
+class ConfirmPaidRequest(BaseModel):
+    order_id: int
+
+
+@router.post("/confirm-paid")
+def confirm_order_paid_after_payment(
+    payload: ConfirmPaidRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> dict:
+    """Vérifie auprès de Stripe que le PaymentIntent est réussi et met la commande à jour en 'paid'."""
+    if not STRIPE_SECRET_KEY:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Stripe n'est pas configuré")
+    order = db.query(Order).filter(Order.id == payload.order_id, Order.user_id == current_user.id).first()
+    if not order:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Commande introuvable")
+    if order.status == "paid":
+        return {"status": "ok", "message": "already_paid"}
+    if not order.stripe_payment_intent_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Aucun paiement Stripe pour cette commande")
+    try:
+        payment_intent = stripe.PaymentIntent.retrieve(order.stripe_payment_intent_id)
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="PaymentIntent Stripe introuvable")
+    if payment_intent.status != "succeeded":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Paiement non finalisé (statut: {payment_intent.status})",
+        )
+    order.status = "paid"
+    db.commit()
+    return {"status": "ok"}
+
+
 class MockConfirmRequest(BaseModel):
     order_id: int
 
