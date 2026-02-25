@@ -276,6 +276,44 @@ function App() {
         )}
       </main>
 
+      <section className="faq-section">
+        <div className="faq-inner">
+          <h2 className="faq-title">Questions fréquemment posées</h2>
+          <div className="faq-list">
+            <details className="faq-item">
+              <summary className="faq-question">Comment acheter un ebook ?</summary>
+              <p className="faq-answer">
+                Créez un compte ou connectez-vous, parcourez le catalogue, ajoutez l&apos;ebook au panier puis validez le paiement par carte (Stripe). Vous pourrez télécharger vos achats dans « Mes achats ».
+              </p>
+            </details>
+            <details className="faq-item">
+              <summary className="faq-question">Comment télécharger mes ebooks après achat ?</summary>
+              <p className="faq-answer">
+                Rendez-vous dans « Mes achats » depuis le menu. Chaque commande affiche un lien de téléchargement pour chaque ebook acheté. Le lien reste disponible tant que vous êtes connecté.
+              </p>
+            </details>
+            <details className="faq-item">
+              <summary className="faq-question">Le paiement est-il sécurisé ?</summary>
+              <p className="faq-answer">
+                Oui. Les paiements sont traités par Stripe (carte bancaire). Aucune donnée de carte n&apos;est stockée sur nos serveurs. La connexion au site est sécurisée (HTTPS).
+              </p>
+            </details>
+            <details className="faq-item">
+              <summary className="faq-question">Quel format sont les ebooks ?</summary>
+              <p className="faq-answer">
+                Les ebooks sont fournis au format PDF, lisibles sur ordinateur, tablette et liseuse. Vous pouvez les télécharger dès que le paiement est confirmé.
+              </p>
+            </details>
+            <details className="faq-item">
+              <summary className="faq-question">Puis-je contacter La Muse Éloquente ?</summary>
+              <p className="faq-answer">
+                Oui. Retrouvez La Muse Éloquente sur les réseaux sociaux (liens en bas de page) pour les actualités, le concours « 2 Minutes pour Convaincre » et toute question.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+
       <footer className="footer">
         <div className="footer-stats">
           <h3 className="footer-stats-title">Chiffres clés</h3>
