@@ -23,7 +23,14 @@ function App() {
   const [view, setView] = useState<"catalogue" | "cart" | "orders">("catalogue");
   const [checkoutOrder, setCheckoutOrder] = useState<CheckoutOrder | null>(null);
   const [paymentSuccessOrderId, setPaymentSuccessOrderId] = useState<number | null>(null);
+  const [cartMessage, setCartMessage] = useState<{ type: "success" | "info"; text: string } | null>(null);
   const confirmPaidSentRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!cartMessage) return;
+    const t = setTimeout(() => setCartMessage(null), 4000);
+    return () => clearTimeout(t);
+  }, [cartMessage]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -115,11 +122,21 @@ function App() {
   }
 
   if (authMode === "login" && !user) {
-    return <LoginPage onSuccess={onAuthSuccess} />;
+    return (
+      <LoginPage
+        onSuccess={onAuthSuccess}
+        onBack={() => { setAuthMode(null); setPendingAddToCart(null); }}
+      />
+    );
   }
 
   if (authMode === "register" && !user) {
-    return <RegisterPage onSuccess={onAuthSuccess} />;
+    return (
+      <RegisterPage
+        onSuccess={onAuthSuccess}
+        onBack={() => { setAuthMode(null); setPendingAddToCart(null); }}
+      />
+    );
   }
 
   if (paymentSuccessOrderId !== null) {
@@ -204,6 +221,12 @@ function App() {
         </div>
       </header>
 
+      {cartMessage && (
+        <div className={`cart-toast cart-toast-${cartMessage.type}`} role="status">
+          {cartMessage.type === "success" ? "✓ " : ""}{cartMessage.text}
+        </div>
+      )}
+
       <main className="layout-main">
         {checkoutOrder ? (
           <section className="products-section">
@@ -264,7 +287,12 @@ function App() {
                   setAuthMode("choice");
                   return;
                 }
+                if (cartItems.some((item) => item.id === p.id)) {
+                  setCartMessage({ type: "info", text: "Cet ebook est déjà dans le panier." });
+                  return;
+                }
                 addItem({ id: p.id, title: p.title, priceCents: p.priceCents });
+                setCartMessage({ type: "success", text: "Ebook ajouté au panier avec succès." });
               }}
             />
             </section>

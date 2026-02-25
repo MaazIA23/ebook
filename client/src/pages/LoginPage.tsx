@@ -10,9 +10,10 @@ function isValidEmail(value: string): boolean {
 
 type Props = {
   onSuccess?: () => void;
+  onBack?: () => void;
 };
 
-const LoginPage: React.FC<Props> = ({ onSuccess }) => {
+const LoginPage: React.FC<Props> = ({ onSuccess, onBack }) => {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,8 +41,18 @@ const LoginPage: React.FC<Props> = ({ onSuccess }) => {
   }
 
   return (
-    <div className="page-center">
-      <div className="card">
+    <div className="app-shell">
+      {onBack && (
+        <header className="navbar">
+          <div className="navbar-inner">
+            <button type="button" className="brand auth-page-brand" onClick={onBack}>
+              <span className="brand-title">La Muse Eloquente</span>
+            </button>
+          </div>
+        </header>
+      )}
+      <div className="page-center">
+        <div className="card">
         <h1 className="card-title">Connexion</h1>
         <p className="card-subtitle">Reviens sur ta bibliothèque et poursuis tes achats.</p>
         <form onSubmit={handleSubmit}>
@@ -70,7 +81,13 @@ const LoginPage: React.FC<Props> = ({ onSuccess }) => {
           <button className="btn btn-primary" type="submit" disabled={loading} style={{ width: "100%", justifyContent: "center" }}>
             {loading ? "Connexion..." : "Se connecter"}
           </button>
+          {onBack && (
+            <button type="button" className="btn btn-ghost" onClick={onBack} style={{ width: "100%", justifyContent: "center", marginTop: "0.75rem" }}>
+              Retour à l&apos;accueil
+            </button>
+          )}
         </form>
+        </div>
       </div>
     </div>
   );
