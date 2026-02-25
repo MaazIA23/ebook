@@ -21,6 +21,7 @@ class ProductBase(BaseModel):
     long_description: str | None = None
     price_cents: int
     cover_image_url: str | None = None
+    sample_pdf_url: str | None = None
     file_key: str
 
 
@@ -34,6 +35,7 @@ class ProductUpdate(BaseModel):
     long_description: str | None = None
     price_cents: int | None = None
     cover_image_url: str | None = None
+    sample_pdf_url: str | None = None
     file_key: str | None = None
     is_active: bool | None = None
 

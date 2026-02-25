@@ -9,3 +9,4 @@ pyjwt
 stripe
 email-validator
 python-multipart
+pypdf

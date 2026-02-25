@@ -14,6 +14,7 @@ class Product(Base):
     long_description = Column(Text, nullable=True)  # description détaillée pour la modal
     price_cents = Column(Integer, nullable=False)
     cover_image_url = Column(String, nullable=True)
+    sample_pdf_url = Column(String, nullable=True)  # URL d'un extrait PDF (feuilleter)
     file_key = Column(String, nullable=False)  # chemin/clé du PDF dans le stockage
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)

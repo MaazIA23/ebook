@@ -22,6 +22,7 @@ def upsert_product(
     price_cents: int,
     file_key: str,
     cover_image_url: str | None = None,
+    sample_pdf_url: str | None = None,
 ):
     existing = db.query(Product).filter(Product.title == title).first()
     if existing:
@@ -30,6 +31,8 @@ def upsert_product(
         existing.price_cents = price_cents
         existing.file_key = file_key
         existing.cover_image_url = cover_image_url
+        if sample_pdf_url is not None:
+            existing.sample_pdf_url = sample_pdf_url
         existing.is_active = True
         return existing, False
 
@@ -40,6 +43,7 @@ def upsert_product(
         price_cents=price_cents,
         file_key=file_key,
         cover_image_url=cover_image_url,
+        sample_pdf_url=sample_pdf_url,
         is_active=True,
     )
     db.add(product)
@@ -71,6 +75,7 @@ def main():
             price_cents=1490,
             file_key="ebooks/decrochez-votre-alternance.pdf",
             cover_image_url="/static/covers/decrochez-votre-alternance.png",
+            sample_pdf_url="/static/samples/decrochez-votre-alternance-extrait.pdf",
         )
 
         p2, created2 = upsert_product(
@@ -91,6 +96,7 @@ def main():
             price_cents=990,
             file_key="ebooks/chroniques-une-voix-qui-sest-revelee.pdf",
             cover_image_url="/static/covers/chroniques-une-voix-qui-sest-revelee.png",
+            sample_pdf_url="/static/samples/chroniques-une-voix-qui-sest-revelee-extrait.pdf",
         )
 
         p3, created3 = upsert_product(
@@ -112,6 +118,7 @@ def main():
             price_cents=1290,
             file_key="ebooks/ebook-le-secret-dune-belle-diction.pdf",
             cover_image_url="/static/covers/le-secret-dune-belle-diction.png",
+            sample_pdf_url="/static/samples/ebook-le-secret-dune-belle-diction-extrait.pdf",
         )
 
         db.commit()

@@ -433,9 +433,19 @@ a {
 .product-footer {
   margin-top: auto;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.product-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
+}
+
+.product-extract-link {
+  text-decoration: none;
 }
 
 .pill {
@@ -774,6 +784,34 @@ a {
   }
 }
 
+.cart-reminder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  background: var(--accent-soft);
+  border-bottom: 1px solid var(--navy-border);
+}
+
+.cart-reminder-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.cart-reminder-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+}
+
 /* Avis & Témoignages */
 .testimonials-section {
   padding: 2rem 0 2.5rem;
@@ -925,6 +963,44 @@ a {
   font-weight: 600;
   color: var(--navy);
   text-align: center;
+}
+
+.footer-legal-link {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.footer-legal-link:hover {
+  color: var(--accent);
+}
+
+.legal-page {
+  max-width: 640px;
+}
+
+.legal-content {
+  margin-top: 0.5rem;
+}
+
+.legal-title {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.legal-content p {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--text-soft);
 }
 
 .footer-stats {

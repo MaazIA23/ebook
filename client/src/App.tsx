@@ -20,10 +20,11 @@ function App() {
   const { count: cartCount, items: cartItems, clearCart, addItem } = useCart();
   const [authMode, setAuthMode] = useState<"login" | "register" | "choice" | null>(null);
   const [pendingAddToCart, setPendingAddToCart] = useState<{ id: number; title: string; priceCents: number } | null>(null);
-  const [view, setView] = useState<"catalogue" | "cart" | "orders">("catalogue");
+  const [view, setView] = useState<"catalogue" | "cart" | "orders" | "legal">("catalogue");
   const [checkoutOrder, setCheckoutOrder] = useState<CheckoutOrder | null>(null);
   const [paymentSuccessOrderId, setPaymentSuccessOrderId] = useState<number | null>(null);
   const [cartMessage, setCartMessage] = useState<{ type: "success" | "info"; text: string } | null>(null);
+  const [cartReminderDismissed, setCartReminderDismissed] = useState(false);
   const confirmPaidSentRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -227,6 +228,22 @@ function App() {
         </div>
       )}
 
+      {view === "catalogue" && cartCount > 0 && !cartReminderDismissed && (
+        <div className="cart-reminder" role="status">
+          <span className="cart-reminder-text">
+            Vous avez {cartCount} article{cartCount > 1 ? "s" : ""} dans votre panier.
+          </span>
+          <div className="cart-reminder-actions">
+            <button type="button" className="btn btn-primary btn-sm" onClick={() => setView("cart")}>
+              Voir le panier
+            </button>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => setCartReminderDismissed(true)} aria-label="Fermer">
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       <main className="layout-main">
         {checkoutOrder ? (
           <section className="products-section">
@@ -318,9 +335,37 @@ function App() {
                   <p className="testimonial-text">&quot;J&apos;ai acheté plusieurs ebooks de La Muse Éloquente. Chacun m&apos;a apporté des outils concrets : la posture, le regard, la voix. Aujourd&apos;hui je prends la parole en réunion sans appréhension.&quot;</p>
                   <footer className="testimonial-author">— S. L., acheté les ebooks</footer>
                 </blockquote>
+                <blockquote className="testimonial-card">
+                  <p className="testimonial-text">&quot;«&nbsp;Chroniques d&apos;une voix qui s&apos;est révélée&nbsp;» m&apos;a permis de comprendre d&apos;où venait ma peur de parler en public. Les exercices m&apos;aident à m&apos;affirmer. Je recommande vivement.&quot;</p>
+                  <footer className="testimonial-author">— F. M., acheté l&apos;ebook</footer>
+                </blockquote>
+                <blockquote className="testimonial-card">
+                  <p className="testimonial-text">&quot;J&apos;ai acheté «&nbsp;Le secret d&apos;une belle diction&nbsp;» pour mon fils. En quelques semaines sa façon d&apos;articuler s&apos;est améliorée. Contenu accessible et efficace.&quot;</p>
+                  <footer className="testimonial-author">— C. R., acheté l&apos;ebook</footer>
+                </blockquote>
               </div>
             </section>
           </>
+        ) : view === "legal" ? (
+          <section className="products-section legal-page">
+            <div className="section-header">
+              <button type="button" className="btn btn-ghost" onClick={() => setView("catalogue")} style={{ alignSelf: "flex-start" }}>
+                ← Retour à l&apos;accueil
+              </button>
+            </div>
+            <div className="legal-content">
+              <h2 className="legal-title">Mentions légales</h2>
+              <p><strong>Éditeur du site</strong><br />La Muse Éloquente – Boutique d&apos;ebooks.</p>
+              <p>Pour toute question : contact via les réseaux sociaux (liens en bas de page).</p>
+
+              <h2 className="legal-title">Confidentialité</h2>
+              <p>Les données collectées (email, nom lors de l&apos;inscription) servent à la gestion de votre compte et de vos achats. Les paiements sont traités par Stripe ; nous ne stockons pas vos coordonnées bancaires.</p>
+              <p>Vous pouvez demander l&apos;accès ou la suppression de vos données en nous contactant. Nous ne vendons pas vos données à des tiers.</p>
+
+              <h2 className="legal-title">Cookies</h2>
+              <p>Le site utilise des cookies techniques nécessaires au fonctionnement (session, panier). En poursuivant votre navigation, vous acceptez leur utilisation.</p>
+            </div>
+          </section>
         ) : (
           <section className="products-section">
             <OrdersPage />
@@ -395,6 +440,9 @@ function App() {
           </ul>
         </div>
         <p className="footer-brand">La Muse Eloquente – Boutique d&apos;ebooks</p>
+        <button type="button" className="footer-legal-link" onClick={() => setView("legal")}>
+          Mentions légales et confidentialité
+        </button>
       </footer>
     </div>
   );

@@ -8,6 +8,7 @@ type Product = {
   long_description?: string | null;
   price_cents: number;
   cover_image_url?: string | null;
+  sample_pdf_url?: string | null;
 };
 
 type Props = {
@@ -54,6 +55,13 @@ export default function CataloguePage({ onAddToCart }: Props): React.JSX.Element
       ? product.cover_image_url
       : product.cover_image_url
         ? `${getApiBaseUrl()}${product.cover_image_url}`
+        : null;
+
+  const samplePdfUrl = (product: Product) =>
+    product.sample_pdf_url?.startsWith("http")
+      ? product.sample_pdf_url
+      : product.sample_pdf_url
+        ? `${getApiBaseUrl()}${product.sample_pdf_url}`
         : null;
 
   if (isLoading) {
@@ -106,6 +114,7 @@ export default function CataloguePage({ onAddToCart }: Props): React.JSX.Element
                   className="product-cover-img"
                   src={coverUrl(product)!}
                   alt=""
+                  loading="lazy"
                   onError={(e) => {
                     e.currentTarget.style.display = "none";
                     const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
@@ -127,19 +136,32 @@ export default function CataloguePage({ onAddToCart }: Props): React.JSX.Element
             <p className="product-price">{(product.price_cents / 100).toFixed(2)} €</p>
             <div className="product-footer" onClick={(e) => e.stopPropagation()}>
               <span className="pill">PDF • Téléchargement immédiat</span>
-              <button
-                className="btn btn-primary"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAddToCart({
-                    id: product.id,
-                    title: product.title,
-                    priceCents: product.price_cents,
-                  });
-                }}
-              >
-                Ajouter au panier
-              </button>
+              <div className="product-footer-actions">
+                {samplePdfUrl(product) && (
+                  <a
+                    href={samplePdfUrl(product)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-secondary product-extract-link"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Voir un extrait
+                  </a>
+                )}
+                <button
+                  className="btn btn-primary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddToCart({
+                      id: product.id,
+                      title: product.title,
+                      priceCents: product.price_cents,
+                    });
+                  }}
+                >
+                  Ajouter au panier
+                </button>
+              </div>
             </div>
           </article>
         ))}
@@ -181,6 +203,17 @@ export default function CataloguePage({ onAddToCart }: Props): React.JSX.Element
                 {selectedProduct.long_description ?? selectedProduct.description}
               </p>
               <p className="modal-product-price">{(selectedProduct.price_cents / 100).toFixed(2)} €</p>
+              {samplePdfUrl(selectedProduct) && (
+                <a
+                  href={samplePdfUrl(selectedProduct)!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-secondary"
+                  style={{ width: "100%", justifyContent: "center", marginBottom: "0.75rem" }}
+                >
+                  Voir un extrait (PDF)
+                </a>
+              )}
               <button
                 type="button"
                 className="btn btn-primary"

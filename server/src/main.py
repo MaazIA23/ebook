@@ -29,6 +29,15 @@ except Exception as e:
     import sys
     print(f"Warning: migration long_description failed: {e}", file=sys.stderr)
 
+# Migration : ajouter sample_pdf_url pour les extraits (feuilleter)
+try:
+    with engine.connect() as conn:
+        conn.execute(text("ALTER TABLE products ADD COLUMN IF NOT EXISTS sample_pdf_url VARCHAR(512);"))
+        conn.commit()
+except Exception as e:
+    import sys
+    print(f"Warning: migration sample_pdf_url failed: {e}", file=sys.stderr)
+
 # CORS : en prod, définir CORS_ORIGINS (ex. "https://monapp.vercel.app")
 _cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:5174")
 CORS_ORIGINS_LIST = [o.strip() for o in _cors_origins.split(",") if o.strip()]
