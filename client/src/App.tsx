@@ -52,18 +52,6 @@ function App() {
     setView("catalogue");
   }, []);
 
-  if (loading) {
-    return (
-      <div className="app-shell">
-        <div className="page-center">
-          <div className="card" style={{ textAlign: "center" }}>
-            <p style={{ margin: 0 }}>Chargement de votre espace...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const onAuthSuccess = useCallback(() => {
     setAuthMode(null);
     if (pendingAddToCart) {
@@ -72,9 +60,30 @@ function App() {
     }
   }, [pendingAddToCart, addItem]);
 
+  if (loading) {
+    return (
+      <div className="app-shell" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <div className="page-center">
+          <div className="card" style={{ textAlign: "center" }}>
+            <p style={{ margin: 0, color: "var(--text)" }}>Chargement de votre espace...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (authMode === "choice" && !user) {
     return (
       <div className="app-shell">
+        <header className="navbar">
+          <div className="navbar-inner">
+            <div className="brand" onClick={() => { setAuthMode(null); setPendingAddToCart(null); }}>
+              <div>
+                <div className="brand-title">La Muse Eloquente</div>
+              </div>
+            </div>
+          </div>
+        </header>
         <main className="layout-main">
           <div className="page-center">
             <div className="card auth-choice-card">

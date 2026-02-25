@@ -19,21 +19,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    let cancelled = false;
+    const timeoutId = setTimeout(() => {
+      if (!cancelled) setLoading(false);
+    }, 8000);
+
     async function init() {
       if (token) {
         setAuthToken(token);
         try {
           const me = await getMe();
-          setUser(me);
+          if (!cancelled) setUser(me);
         } catch {
-          setToken(null);
-          localStorage.removeItem("token");
-          setAuthToken(null);
+          if (!cancelled) {
+            setToken(null);
+            localStorage.removeItem("token");
+            setAuthToken(null);
+          }
         }
       }
-      setLoading(false);
+      if (!cancelled) setLoading(false);
     }
     void init();
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
   }, [token]);
 
   async function login(email: string, password: string) {
