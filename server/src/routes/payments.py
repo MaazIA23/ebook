@@ -1,4 +1,5 @@
 import os
+import time
 
 import stripe
 from dotenv import load_dotenv
@@ -87,6 +88,9 @@ def confirm_order_paid_after_payment(
         payment_intent = stripe.PaymentIntent.retrieve(order.stripe_payment_intent_id)
     except Exception:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="PaymentIntent Stripe introuvable")
+    if payment_intent.status == "processing":
+        time.sleep(2)
+        payment_intent = stripe.PaymentIntent.retrieve(order.stripe_payment_intent_id)
     if payment_intent.status != "succeeded":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

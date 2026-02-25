@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "./api/http";
 import { useAuth } from "./store/AuthContext";
 import { useCart } from "./store/CartContext";
@@ -22,6 +22,7 @@ function App() {
   const [view, setView] = useState<"catalogue" | "cart" | "orders">("catalogue");
   const [checkoutOrder, setCheckoutOrder] = useState<CheckoutOrder | null>(null);
   const [paymentSuccessOrderId, setPaymentSuccessOrderId] = useState<number | null>(null);
+  const confirmPaidSentRef = useRef<number | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -33,10 +34,18 @@ function App() {
         setPaymentSuccessOrderId(orderId);
         setCheckoutOrder(null);
         window.history.replaceState({}, "", window.location.pathname || "/");
-        api.post("/payments/confirm-paid", { order_id: orderId }).catch(() => {});
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (loading || paymentSuccessOrderId === null) return;
+    if (confirmPaidSentRef.current === paymentSuccessOrderId) return;
+    confirmPaidSentRef.current = paymentSuccessOrderId;
+    api
+      .post("/payments/confirm-paid", { order_id: paymentSuccessOrderId })
+      .catch(() => {});
+  }, [paymentSuccessOrderId, loading]);
 
   const goToCatalogue = useCallback(() => {
     setView("catalogue");
